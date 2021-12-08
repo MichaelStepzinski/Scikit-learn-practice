@@ -2,6 +2,7 @@
 # Date:     28 November, 2021
 # Purpose:  CS422 Project 5 Scikit-learn testing - utilities
 
+from operator import pos
 import numpy as np
 import sklearn as sk
 #from sklearn.datasets.load_files
@@ -12,8 +13,8 @@ import random
 
 def generate_vocab(dir, min_count, max_files):
     # handle directories
-    posdir = dir + '/pos/'
-    negdir = dir + '/neg/'
+    posdir = dir + 'pos/'
+    negdir = dir + 'neg/'
     posfilenames = os.listdir(posdir)
     negfilenames = os.listdir(negdir)
     
@@ -32,7 +33,7 @@ def generate_vocab(dir, min_count, max_files):
     generate_corpus(negfilenames, negdir, corpus)
 
     # using corpus, get all words that occur more than min_count
-    vocab = [k for k,v in corpus.items() if v > 1]
+    vocab = [k for k,v in corpus.items() if v >= min_count]
     
     return vocab
 
@@ -67,16 +68,23 @@ def load_data(dir, vocab, max_files):
     # return feature vectors with classification
 
     # handle directories
-    posdir = dir + '/pos/'
-    negdir = dir + '/neg/'
+    posdir = dir + 'pos/'
+    negdir = dir + 'neg/'
     posfilenames = os.listdir(posdir)
     negfilenames = os.listdir(negdir)
+
+    posfilenames = [f'{posdir}{i}' for i in posfilenames]
+    negfilenames = [f'{negdir}{i}' for i in negfilenames]
     
     # if max_files is -1, then get every file
     if max_files == -1:
         file_count = len(posfilenames) + len(negfilenames)
     else:
-        file_count = max_files
+        #file_count = max_files
+        posfilenames = posfilenames[:int(max_files/2)]
+        negfilenames = negfilenames[:int(max_files/2)]
+        filenames = posfilenames + negfilenames
+        file_count = len(filenames)
 
     X_data = np.zeros(shape=(file_count, len(vocab)))
     Y_data = np.zeros(shape=(file_count))
@@ -87,23 +95,21 @@ def load_data(dir, vocab, max_files):
     # for the first max_files filenames,
     #  generate vector and add to master dataset
     #  in dataset, positive example is 1, negative is 0
-    for num, filename in zip(range(int(file_count/2)), posfilenames):
-        X_data[num] = create_word_vector(posdir + filename, vocab)
-        print('pos ' + str(num))
-    for num, filename in zip(range(int(file_count/2)), negfilenames):
-        X_data[num] = create_word_vector(negdir + filename, vocab)
-        print('neg ' + str(num))
+    for num, filename in zip(range(file_count), filenames):
+        X_data[num] = create_word_vector(filename, vocab)
+        print(num)
 
     return X_data, Y_data
             
 def generate_corpus(filenames, dir, corpus):
     # punctuation exclusion list
-    exclude = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~0123456789'
+    #exclude = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~0123456789'
+    exclude = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
     for filename in filenames:
         with open(dir + filename, 'r') as data:
             # read data and process
             temp = data.read()
-            temp = temp.lower()
+            #temp = temp.lower()
             for s in exclude:
                 temp = temp.replace(s, '')
             # data is processed, add to corpus dictionary

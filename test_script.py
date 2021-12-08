@@ -6,12 +6,17 @@ sys.path.insert(0, 'Project5')
 import utilities as utils
 import ml
 
-#preliminaries
+#
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
+from sklearn.model_selection import train_test_split # Import train_test_split function
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+#
 
-#CHANGE UPON TURN-IN
-train_dir = "aclImdb_v1/aclImdb/train"
-test_dir = "aclImdb_v1/aclImdb/test"
-max_files = 10000
+#preliminaries
+train_dir = "aclImdb_v1/aclImdb/train/"
+test_dir = "aclImdb_v1/aclImdb/test/"
+max_files = 1000
 min_word_count = 2
 PCA_K = 50
 
@@ -27,7 +32,8 @@ proj_test_X = ml.pca_transform(test_X, pca)
 
 #Decision Tree
 dt = ml.dt_train(train_X,train_Y)
-test_predict = ml.model_test(test_X, dt)
+#test_predict = ml.model_test(test_X, dt)
+test_predict = dt.predict(test_X)
 f1 = ml.compute_F1(test_Y,test_predict)
 print("Decision Tree:", f1)
 

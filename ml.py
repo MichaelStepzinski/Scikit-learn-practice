@@ -14,7 +14,7 @@ from sklearn.exceptions import ConvergenceWarning
 from sklearn import svm
 
 def dt_train(X,Y):
-    clf = DecisionTreeClassifier(random_state=0)
+    clf = DecisionTreeClassifier(criterion='entropy')
     clf = clf.fit(X, Y)
     return clf
 

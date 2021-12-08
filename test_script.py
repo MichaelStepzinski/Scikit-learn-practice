@@ -4,14 +4,14 @@ import sys
 sys.path.insert(0, 'Project5')
 
 import utilities as utils
-#import ml
+import ml
 
 #preliminaries
 
 #CHANGE UPON TURN-IN
 train_dir = "aclImdb_v1/aclImdb/train"
 test_dir = "aclImdb_v1/aclImdb/test"
-max_files = 200
+max_files = 10000
 min_word_count = 2
 PCA_K = 50
 
